@@ -12,7 +12,8 @@
 - ✅ Optional class decorator `@WithLogger()` for automatic logger injection
 - ✅ Customizable context shape with zero config by default
 - ✅ Built-in support for Pino transports like `pino-pretty`
-
+- ✅ Supports JSON or human-readable log formats via env
+- ✅ Optional log-to-file support with file rotation capability
 ---
 
 ## 📦 Installation
@@ -78,6 +79,17 @@ configureLoggerContext(() => ({
 
 ---
 
+## ⚙️ Environment Variables
+| Variable        | Description                                      | Default          |
+| --------------- | ------------------------------------------------ | ---------------- |
+| `APP_NAME`      | Name to appear in logs                           | `logctx`         |
+| `LOG_LEVEL`     | Logging level (`debug`, `info`, `warn`, `error`) | `info`           |
+| `LOG_FORMAT`    | Log output format: `json` or `pretty`            | `json`           |
+| `LOG_TO_FILE`   | Enable file logging: `true` or `false`           | `false`          |
+| `LOG_FILE_PATH` | File path to store logs (if `LOG_TO_FILE=true`)  | `./logs/app.log` |
+
+---
+
 ## 🧠 API Reference
 
 ### `runWithContext(context, callback)`
@@ -133,6 +145,8 @@ class MyService {
 * Contextual logging for HTTP, WebSocket, Kafka
 * Decorator-based logging without boilerplate
 * Enforce consistent metadata across logs
+* Switch easily between JSON and pretty logs using environment
+* Persist logs to disk for production systems
 
 ---
 
