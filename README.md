@@ -14,7 +14,7 @@
 - ✅ Built-in support for Pino transports like `pino-pretty`
 - ✅ Supports JSON or human-readable log formats via env
 - ✅ Optional log-to-file support with file rotation capability
----
+- ✅ Supports a generic logging middleware compatible with any framework
 
 ## 📦 Installation
 
@@ -53,6 +53,7 @@ import { WithLogger } from 'logctx';
 
 @WithLogger()
 class UserService {
+  private log: any;
   doWork() {
     this.log.info('Logged with contextual metadata');
   }
@@ -132,11 +133,50 @@ Injects `this.log` into any class. Works well with service or controller pattern
 ```ts
 @WithLogger()
 class MyService {
-  log: LoggerType; // optional for type hint
+  private log: LoggerType; // optional for type hint
   doSomething() {
     this.log.info('Message with context');
   }
 }
+```
+
+### With middleware 
+Here's how you can integrate logctx into an Express application to enable contextual logging based on headers, query parameters, cookies, and route parameters.
+
+```ts
+import { createContextLogger, ContextualLogger } from "logctx";
+import express from "express";
+
+const logger = new ContextualLogger();
+
+// Middleware to initialize context logger
+function middleware(
+    req: express.Request,
+    res: express.Response,
+    next: express.NextFunction
+) {
+    createContextLogger(req, next, {
+        headers: ['x-request-id', 'user-agent'],
+        queries: ['queryParam'],
+        cookies: ['sessionId'],
+        params: ['param1', 'param2'],
+    });
+    next(); // Important: call next middleware after context setup
+}
+
+const app = express();
+app.use(middleware);
+
+// Sample route using contextual logger
+app.get('/', (req, res) => {
+    logger.log.info('Request received');
+    res.send('Hello from Express with Contextual Logger!');
+});
+
+app.listen(3000, () => {
+    console.log('Server is running on http://localhost:3000');
+});
+
 ```
 
 ## 💡 Use Cases
@@ -147,6 +187,7 @@ class MyService {
 * Enforce consistent metadata across logs
 * Switch easily between JSON and pretty logs using environment
 * Persist logs to disk for production systems
+* Use middleware with any NodeJS frameworks.
 
 ---
 
